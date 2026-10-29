@@ -1,0 +1,14 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: a97497a2-3420-4bf5-9462-ba935e841a4e
+name: blog-build
+version: 1
+description: Production build of the site into dist/. Fails on broken frontmatter or templates.
+tags:
+  area: blog
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: npm run build
+      timeout: 600000

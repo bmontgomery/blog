@@ -1,0 +1,68 @@
+id: 5d6dbb9d-a692-4c84-94e4-7e62db2caded
+name: setup-github-pages
+version: 1
+tags:
+  area: blog
+description: "One-time setup: install, build, connect the GitHub repo, push, and wait for the first deploy."
+inputs:
+  type: object
+  properties:
+    repoUrl:
+      type: string
+      description: GitHub repo URL, e.g. https://github.com/<user>/<user>.github.io.git
+  required:
+    - repoUrl
+jobs:
+  - name: setup
+    description: Get the blog live on GitHub Pages
+    steps:
+      - name: install
+        description: Install dependencies
+        task:
+          type: behavior
+          behavior: blog-install
+          methodName: execute
+        dependsOn: []
+      - name: build
+        description: Verify the site builds locally
+        task:
+          type: behavior
+          behavior: blog-build
+          methodName: execute
+        dependsOn:
+          - step: install
+            condition:
+              type: succeeded
+      - name: enable-pages
+        description: Manual GitHub setup that has no API without a token
+        task:
+          type: manual_approval
+          prompt: 'On github.com: (1) create the repository (empty: no README, license or .gitignore), (2) open Settings > Pages and set Source to "GitHub Actions". Approve once both are done.'
+        dependsOn:
+          - step: build
+            condition:
+              type: succeeded
+      - name: push
+        description: Set the origin remote and push main (triggers the deploy)
+        task:
+          type: behavior
+          behavior: blog-connect-github
+          methodName: execute
+          inputs:
+            repoUrl: ${{ inputs.repoUrl }}
+        dependsOn:
+          - step: enable-pages
+            condition:
+              type: succeeded
+      - name: verify
+        description: Wait until the site is live
+        task:
+          type: behavior
+          behavior: blog-verify-live
+          methodName: execute
+          inputs:
+            path: /
+        dependsOn:
+          - step: push
+            condition:
+              type: succeeded

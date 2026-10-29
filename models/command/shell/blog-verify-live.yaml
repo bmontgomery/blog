@@ -1,0 +1,22 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 0e88f0c4-8cd7-4f5b-ba8b-47a01d16a9c5
+name: blog-verify-live
+version: 1
+description: Poll the GitHub Pages URL (optionally a specific path) until it returns 200.
+tags:
+  area: blog
+inputs:
+  properties:
+    path:
+      type: string
+      default: ""
+      description: Site path to check, e.g. /blog/my-post/ (defaults to the home page)
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: node scripts/blog.mjs verify
+      env:
+        SITE_PATH: ${{ inputs.path }}
+      timeout: 660000

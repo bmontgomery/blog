@@ -1,0 +1,32 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: b29790d2-31cd-46a4-bb7e-fff194af2cb9
+name: blog-new-post
+version: 1
+description: Create a new draft post in src/content/blog/<slug>.md.
+tags:
+  area: blog
+inputs:
+  properties:
+    title:
+      type: string
+      description: Post title
+    description:
+      type: string
+      default: ""
+      description: One-line summary (defaults to the title)
+    slug:
+      type: string
+      default: ""
+      description: URL slug (defaults to the slugified title)
+  required:
+    - title
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: node scripts/blog.mjs new
+      env:
+        POST_TITLE: ${{ inputs.title }}
+        POST_DESCRIPTION: ${{ inputs.description }}
+        POST_SLUG: ${{ inputs.slug }}

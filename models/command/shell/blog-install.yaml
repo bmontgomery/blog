@@ -1,0 +1,14 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: a157e8cc-d1a8-420b-940f-a352c8be54c6
+name: blog-install
+version: 1
+description: Install the blog dependencies (npm ci).
+tags:
+  area: blog
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: npm ci
+      timeout: 600000

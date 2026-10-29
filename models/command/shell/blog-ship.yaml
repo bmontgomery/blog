@@ -1,0 +1,22 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 4b18566b-372a-4754-84c8-284da8078273
+name: blog-ship
+version: 1
+description: Commit all local changes and push to main, which triggers the GitHub Pages deploy.
+tags:
+  area: blog
+inputs:
+  properties:
+    message:
+      type: string
+      default: ""
+      description: Commit message
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: node scripts/blog.mjs ship
+      env:
+        COMMIT_MESSAGE: ${{ inputs.message }}
+      timeout: 300000

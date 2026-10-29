@@ -1,0 +1,22 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 59cc93e3-6b19-4de7-a112-e5ba04aca2f3
+name: blog-publish-post
+version: 1
+description: Mark a draft as published (sets pubDate to today), or stamp updatedDate on an already published post.
+tags:
+  area: blog
+inputs:
+  properties:
+    slug:
+      type: string
+      description: Slug of the post to publish
+  required:
+    - slug
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: node scripts/blog.mjs publish
+      env:
+        POST_SLUG: ${{ inputs.slug }}

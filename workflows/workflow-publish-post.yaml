@@ -1,0 +1,61 @@
+id: 9ffab8a9-00f5-4327-a5f0-631ff0f9a4de
+name: publish-post
+version: 1
+tags:
+  area: blog
+description: "Publish a draft post: mark it published, verify the build, commit and push, then wait for it to go live."
+inputs:
+  type: object
+  properties:
+    slug:
+      type: string
+      description: Slug of the post (file name without .md)
+  required:
+    - slug
+jobs:
+  - name: publish
+    description: Publish one post
+    steps:
+      - name: mark-published
+        description: "Set draft: false and pubDate"
+        task:
+          type: behavior
+          behavior: blog-publish-post
+          methodName: execute
+          inputs:
+            slug: ${{ inputs.slug }}
+        dependsOn: []
+      - name: build
+        description: Verify the site builds
+        task:
+          type: behavior
+          behavior: blog-build
+          methodName: execute
+        dependsOn:
+          - step: mark-published
+            condition:
+              type: succeeded
+      - name: push
+        description: Commit and push to main
+        task:
+          type: behavior
+          behavior: blog-ship
+          methodName: execute
+          inputs:
+            message: '${{ "Publish: " + inputs.slug }}'
+        dependsOn:
+          - step: build
+            condition:
+              type: succeeded
+      - name: verify
+        description: Wait until the post is live
+        task:
+          type: behavior
+          behavior: blog-verify-live
+          methodName: execute
+          inputs:
+            path: ${{ "blog/" + inputs.slug + "/" }}
+        dependsOn:
+          - step: push
+            condition:
+              type: succeeded

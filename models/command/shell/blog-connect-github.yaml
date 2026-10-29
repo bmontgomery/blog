@@ -1,0 +1,23 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 37233b49-6c95-471f-b834-908d64d46aa2
+name: blog-connect-github
+version: 1
+description: Point the origin remote at your GitHub repository and push the initial commit to main.
+tags:
+  area: blog
+inputs:
+  properties:
+    repoUrl:
+      type: string
+      description: e.g. https://github.com/<user>/<user>.github.io.git
+  required:
+    - repoUrl
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: node scripts/blog.mjs connect
+      env:
+        REPO_URL: ${{ inputs.repoUrl }}
+      timeout: 300000

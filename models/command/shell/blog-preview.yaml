@@ -1,0 +1,23 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 727aa690-8999-4c33-a737-08caa4a039ab
+name: blog-preview
+version: 1
+description: Start, stop, or check the local Astro dev server (http://localhost:4321). Drafts are visible here.
+tags:
+  area: blog
+inputs:
+  properties:
+    action:
+      type: string
+      enum:
+        - start
+        - stop
+        - status
+      default: start
+      description: start | stop | status
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: 'npx astro dev ${{ inputs.action == "start" ? "--background" : inputs.action }}'

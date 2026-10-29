@@ -1,0 +1,48 @@
+id: acb7fd60-3eb0-44b0-9c7e-1d703728f945
+name: deploy-site
+version: 1
+tags:
+  area: blog
+description: "Ship any site changes (layout, about page, post edits): build, commit and push, then wait for the deploy."
+inputs:
+  type: object
+  properties:
+    message:
+      type: string
+      default: Update blog
+      description: Commit message
+jobs:
+  - name: deploy
+    description: Build and deploy
+    steps:
+      - name: build
+        description: Verify the site builds
+        task:
+          type: behavior
+          behavior: blog-build
+          methodName: execute
+        dependsOn: []
+      - name: push
+        description: Commit and push to main
+        task:
+          type: behavior
+          behavior: blog-ship
+          methodName: execute
+          inputs:
+            message: ${{ inputs.message }}
+        dependsOn:
+          - step: build
+            condition:
+              type: succeeded
+      - name: verify
+        description: Wait until the site is live
+        task:
+          type: behavior
+          behavior: blog-verify-live
+          methodName: execute
+          inputs:
+            path: /
+        dependsOn:
+          - step: push
+            condition:
+              type: succeeded

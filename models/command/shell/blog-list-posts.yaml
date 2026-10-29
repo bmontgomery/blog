@@ -1,0 +1,13 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 9196e74e-9eef-408b-91ee-1b24fa44a71f
+name: blog-list-posts
+version: 1
+description: List every post with its slug, draft/published status, and date.
+tags:
+  area: blog
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: node scripts/blog.mjs list
