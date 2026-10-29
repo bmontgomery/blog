@@ -17,6 +17,8 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const POSTS_DIR = 'src/content/blog';
+// Posts are served at /<slug>/, alongside these pages and files.
+const RESERVED_SLUGS = ['about', 'rss-xml', 'sitemap-index-xml', 'sitemap-0-xml', 'favicon-svg', 'favicon-ico', '404', 'astro'];
 
 const commands = { new: newPost, publish, list, connect, ship, 'site-url': siteUrl, verify };
 
@@ -36,6 +38,7 @@ function newPost() {
 	const title = requireEnv('POST_TITLE');
 	const description = process.env.POST_DESCRIPTION?.trim() || title;
 	const slug = slugify(process.env.POST_SLUG?.trim() || title);
+	if (RESERVED_SLUGS.includes(slug)) fail(`"${slug}" is used by another page; pass a different slug`);
 	const file = join(POSTS_DIR, `${slug}.md`);
 	if (existsSync(file)) fail(`${file} already exists`);
 
@@ -49,7 +52,7 @@ function newPost() {
 	].join('\n');
 	writeFileSync(file, `${frontmatter}\n\nWrite your post here.\n`);
 	console.log(`Created draft ${file}`);
-	console.log(`Preview: start the dev server (npm run dev) and open http://localhost:4321/blog/${slug}/`);
+	console.log(`Preview: start the dev server (npm run dev) and open http://localhost:4321/${slug}/`);
 }
 
 function publish() {

@@ -54,7 +54,7 @@ jobs:
           behavior: blog-verify-live
           methodName: execute
           inputs:
-            path: ${{ "blog/" + inputs.slug + "/" }}
+            path: ${{ inputs.slug + "/" }}
         dependsOn:
           - step: push
             condition:

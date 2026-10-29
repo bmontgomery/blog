@@ -54,9 +54,11 @@ and delete the sample posts in `src/content/blog/`.
 | Publish a draft              | `swamp workflow run publish-post --input slug=my-post`                               |
 | Deploy other changes         | `swamp workflow run deploy-site --input "message=Update about page"`                  |
 
-`blog-new-post` also accepts `--input slug=...` to choose the URL. `publish-post` sets
+The home page lists published posts, and each post is served at `/<slug>/`.
+`blog-new-post` also accepts `--input slug=...` to choose the URL (slugs that would collide with
+other pages, such as `about`, are refused). `publish-post` sets
 `draft: false` and `pubDate` to today, checks the build, commits and pushes, then waits until
-`/blog/<slug>/` is live. Running it again on an already-published post stamps `updatedDate`
+`/<slug>/` is live. Running it again on an already-published post stamps `updatedDate`
 instead.
 
 ### Swamp behaviors
