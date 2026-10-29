@@ -74,7 +74,7 @@ All are `command/shell` behaviors with a single `execute` method:
 | `blog-publish-post`   | Flips a draft to published (or stamps `updatedDate`)            |
 | `blog-ship`           | Commits all changes and pushes `main`                           |
 | `blog-connect-github` | Sets `origin` and pushes the first commit                       |
-| `blog-verify-live`    | Polls the GitHub Pages URL until it returns 200 (up to 10 min)  |
+| `blog-verify-live`    | Waits until the live site reports the pushed commit (via `/version.txt`), then checks the page returns 200 (up to 10 min) |
 
 ## Commands without swamp
 

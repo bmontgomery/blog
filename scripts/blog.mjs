@@ -116,22 +116,32 @@ function siteUrl() {
 }
 
 async function verify() {
+	const site = pagesUrl();
 	const path = (process.env.SITE_PATH || '/').replace(/^\/?/, '');
-	const url = new URL(path, pagesUrl().replace(/\/?$/, '/')).href;
+	const url = new URL(path, site).href;
+	const versionUrl = new URL('version.txt', site).href;
+	const commit = git('rev-parse', 'HEAD');
 	const timeoutMs = Number(process.env.VERIFY_TIMEOUT_SECONDS || 600) * 1000;
 	const deadline = Date.now() + timeoutMs;
-	console.log(`Waiting for ${url} ...`);
+	// The query string skips GitHub Pages' CDN cache.
+	const get = (u) => fetch(`${u}?t=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
+	console.log(`Waiting for commit ${commit.slice(0, 7)} to be live at ${url} ...`);
 
-	// A deploy takes a minute or two; poll until the page is live.
+	// A deploy takes a minute or two. The old site keeps serving until then, so a 200 alone
+	// proves nothing: wait until the site reports the commit we pushed, then check the page.
 	while (Date.now() < deadline) {
-		const status = await fetch(url, { cache: 'no-store' }).then((r) => r.status, () => 0);
-		if (status === 200) {
-			console.log(`Live: ${url}`);
-			return;
+		const deployed = (await (await get(versionUrl))?.text())?.trim();
+		if (deployed === commit) {
+			const status = (await get(url))?.status;
+			if (status === 200) {
+				console.log(`Live: ${url}`);
+				return;
+			}
+			fail(`Commit ${commit.slice(0, 7)} is deployed but ${url} returned ${status}.`);
 		}
 		await new Promise((r) => setTimeout(r, 15_000));
 	}
-	fail(`${url} was not live after ${timeoutMs / 1000}s. Check the Actions tab of your GitHub repo.`);
+	fail(`Commit ${commit.slice(0, 7)} was not live after ${timeoutMs / 1000}s. Check the Actions tab of your GitHub repo.`);
 }
 
 /** GitHub Pages URL derived from the origin remote: https://<owner>.github.io[/<repo>]/ */
